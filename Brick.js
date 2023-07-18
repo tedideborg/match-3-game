@@ -1,6 +1,6 @@
-export class Brick extends Phaser.GameObjects.Rectangle {
-    constructor(scene, id, manager, row, col, x, y, type, color) {
-        super(scene, x, y, 100, 100, color);
+export class Brick extends Phaser.GameObjects.Graphics {
+    constructor(scene, id, manager, row, col, x, y, type, color, shadow) {
+        super(scene, { x, y });
         this.id = id;
         this.manager = manager;
         this.col = col;
@@ -9,11 +9,24 @@ export class Brick extends Phaser.GameObjects.Rectangle {
         this.startX = x;
         this.startY = y;
 
+        // this.shadow = this.add.graphics();
+        // this.shadow.fillStyle(shadow, 1);
+        // this.shadow.fillRoundedRect(x, y, 100, 110, 10);
+
+        this.fillStyle(color, 1);
+        this.fillRoundedRect(0, 0, 100, 100, 10);
+
         let dragDirection = null;
 
         scene.add.existing(this);
 
-        this.setInteractive({ draggable: true, dropZone: true });
+        this.setInteractive({
+            hitArea: new Phaser.Geom.Rectangle(0, 0, 100, 100),
+            hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+            draggable: true,
+            dropZone: true,
+        });
+
         scene.input.dragDistanceThreshold = 8;
 
         this.on('dragstart', () => {

@@ -1,10 +1,10 @@
 import { Brick } from './Brick.js';
 
 const colors = [
-    { type: 'red', color: '0xff0000' },
-    { type: 'green', color: '0x00FF00' },
-    { type: 'blue', color: '0x0000FF' },
-    { type: 'yellow', color: '0xFFFF00' },
+    { type: 'orange', color: '0xFECC7B', shadow: '0xB13E53' },
+    { type: 'green', color: '0xA7F070', shadow: '0x257179' },
+    { type: 'blue', color: '0x73EFF7', shadow: '0x3B5DC9' },
+    { type: 'darkGreen', color: '0x257179', shadow: '0x29366F' },
 ];
 
 export class BricksManager {
@@ -19,7 +19,7 @@ export class BricksManager {
         const gridHeight = 4;
         const startX = 230; // TODO: Calculate center of screen
         const startY = 150; // TODO: Calculate center of screen
-        const gap = 110;
+        const gap = 120;
 
         let posX = startX;
         let posY = startY;
@@ -29,7 +29,15 @@ export class BricksManager {
             for (let j = 0; j < gridHeight; j++) {
                 let brick = colors[Math.floor(Math.random() * colors.length)];
                 bricksRow.push(
-                    this.placeBrick(i, j, posX, posY, brick.type, brick.color),
+                    this.placeBrick(
+                        i,
+                        j,
+                        posX,
+                        posY,
+                        brick.type,
+                        brick.color,
+                        brick.shadow,
+                    ),
                 );
                 posX += gap;
             }
@@ -43,7 +51,7 @@ export class BricksManager {
         this.bricks;
     }
 
-    placeBrick(row, col, x, y, type, color) {
+    placeBrick(row, col, x, y, type, color, shadow) {
         let id = Math.random() * 1000;
         const brick = new Brick(
             this.scene,
@@ -55,6 +63,7 @@ export class BricksManager {
             y,
             type,
             color,
+            shadow,
         );
         return brick;
     }
