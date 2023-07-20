@@ -1,6 +1,6 @@
-export class Brick extends Phaser.GameObjects.Graphics {
+export class Brick extends Phaser.GameObjects.Container {
     constructor(scene, id, manager, row, col, x, y, type, color, shadow) {
-        super(scene, { x, y });
+        super(scene, x, y);
         this.id = id;
         this.manager = manager;
         this.col = col;
@@ -9,16 +9,21 @@ export class Brick extends Phaser.GameObjects.Graphics {
         this.startX = x;
         this.startY = y;
 
-        // this.shadow = this.add.graphics();
-        // this.shadow.fillStyle(shadow, 1);
-        // this.shadow.fillRoundedRect(x, y, 100, 110, 10);
+        scene.add.existing(this);
 
-        this.fillStyle(color, 1);
-        this.fillRoundedRect(0, 0, 100, 100, 10);
+        this.shadow = this.scene.add
+            .graphics()
+            .fillStyle(shadow)
+            .fillRoundedRect(0, 0, 100, 110, 10);
+        this.add(this.shadow);
+
+        this.graphics = this.scene.add
+            .graphics()
+            .fillStyle(color)
+            .fillRoundedRect(0, 0, 100, 100, 10);
+        this.add(this.graphics);
 
         let dragDirection = null;
-
-        scene.add.existing(this);
 
         this.setInteractive({
             hitArea: new Phaser.Geom.Rectangle(0, 0, 100, 100),
@@ -59,12 +64,6 @@ export class Brick extends Phaser.GameObjects.Graphics {
             } else if (dragDirection.includes('vertical')) {
                 this.y = dragY;
             }
-
-            // TODO: Limit the distance draggable
-            // if (dragX < 40 || dragY < 40) {
-            //     this.x = 40;
-            //     this.y = 40;
-            // }
         });
 
         this.on('dragend', () => {

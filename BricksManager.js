@@ -4,7 +4,8 @@ const colors = [
     { type: 'orange', color: '0xFECC7B', shadow: '0xB13E53' },
     { type: 'green', color: '0xA7F070', shadow: '0x257179' },
     { type: 'blue', color: '0x73EFF7', shadow: '0x3B5DC9' },
-    { type: 'darkGreen', color: '0x257179', shadow: '0x29366F' },
+    { type: 'red', color: '0xF05D5E', shadow: '0x29366F' }, // TODO: Fix better shadow color
+    { type: 'purple', color: '0x6665DD', shadow: '0x29366F' }, // TODO: Fix better shadow color
 ];
 
 export class BricksManager {
@@ -47,8 +48,9 @@ export class BricksManager {
         }
     }
 
-    getTypeToPlace(row, col) {
-        this.bricks;
+    getNextTypeToPlace(row, col) {
+        let brick = colors[Math.floor(Math.random() * colors.length)];
+        this.matchUniqueBrick(row + 1, col);
     }
 
     placeBrick(row, col, x, y, type, color, shadow) {
@@ -82,35 +84,54 @@ export class BricksManager {
         [brick1.row, brick2.row] = [brick2.row, brick1.row];
         [brick1.col, brick2.col] = [brick2.col, brick1.col];
 
-        brick1.x = brick2.startX;
-        brick1.y = brick2.startY;
-        brick2.x = brick1.startX;
-        brick2.y = brick1.startY;
+        // TODO: Removed too fast when matching. Make it wait for tween to finish
+        this.scene.tweens.add({
+            targets: brick2,
+            x: brick1.startX,
+            y: brick1.startY,
+            duration: 100,
+            ease: 'Cubic.inOut',
+            onCompleteParams: { x: brick1.startX, y: brick1.startY },
+            onComplete: (tween, target, data) => {
+                brick2.x = data.x;
+                brick2.y = data.y;
+                brick2.startX = brick2.x;
+                brick2.startY = brick2.y;
+            },
+        });
 
-        brick1.startX = brick1.x;
-        brick1.startY = brick1.y;
-        brick2.startX = brick2.x;
-        brick2.startY = brick2.y;
-
-        this.checkAround(brick2);
-        this.checkAround(brick1);
+        this.scene.tweens.add({
+            targets: brick1,
+            x: brick2.startX,
+            y: brick2.startY,
+            duration: 100,
+            ease: 'Cubic.inOut',
+            onCompleteParams: { x: brick2.startX, y: brick2.startY },
+            completeDelay: 100,
+            onComplete: (tween, target, data) => {
+                brick1.x = data.x;
+                brick1.y = data.y;
+                brick1.startX = brick1.x;
+                brick1.startY = brick1.y;
+                this.checkAround(brick2);
+                this.checkAround(brick1);
+            },
+        });
     }
 
+    // TODO: Rename this function or split up, to make sense
     checkAround(brick) {
         let row = brick.row;
         let col = brick.col;
         let type = brick.type;
-        let horizontalBricks = this.checkHorizontalLines(type, row, col);
-        let verticalBricks = this.checkVerticalLines(type, row, col);
-        let bricksToRemove = [...horizontalBricks, ...verticalBricks];
-        let surroundingBricksToRemove = this.checkSurroundingBricks(
-            type,
-            bricksToRemove,
-        );
+        if (
+            !this.checkHorizontalLines(type, row, col) &&
+            !this.checkVerticalLines(type, row, col)
+        ) {
+            return;
+        }
+        const bricksToRemove = this.checkSurroundingBricks(brick, []);
         bricksToRemove.forEach((brick) => {
-            brick.kill();
-        });
-        surroundingBricksToRemove.forEach((brick) => {
             brick.kill();
         });
     }
@@ -128,9 +149,9 @@ export class BricksManager {
             else break;
         }
         if (bricks.length > 3) {
-            return bricks;
+            return true;
         } else {
-            return [];
+            return false;
         }
     }
 
@@ -147,35 +168,40 @@ export class BricksManager {
             else break;
         }
         if (bricks.length > 3) {
-            return bricks;
+            return true;
         } else {
-            return [];
+            return false;
         }
     }
 
-    checkSurroundingBricks(type, bricksArray) {
-        let surroundingBricks = [];
-        bricksArray.forEach((brick) => {
-            let row = brick.row;
-            let col = brick.col;
-            if (this.matchUniqueBrick(type, row, col - 1, bricksArray)) {
-                surroundingBricks.push(this.bricks[row][col - 1]);
-            }
-            if (this.matchUniqueBrick(type, row, col + 1, bricksArray)) {
-                surroundingBricks.push(this.bricks[row][col + 1]);
-            }
-            if (this.matchUniqueBrick(type, row - 1, col, bricksArray)) {
-                surroundingBricks.push(this.bricks[row - 1][col]);
-            }
-            if (this.matchUniqueBrick(type, row + 1, col, bricksArray)) {
-                surroundingBricks.push(this.bricks[row + 1][col]);
-            }
-        });
-        return surroundingBricks;
+    // TODO: Redo as a recursion function
+    checkSurroundingBricks(brick, bricksArray) {
+        const row = brick.row;
+        const col = brick.col;
+        const type = brick.type;
+
+        if (this.matchUniqueBrick(type, row, col - 1, bricksArray)) {
+            bricksArray.push(this.bricks[row][col - 1]);
+            this.checkSurroundingBricks(this.bricks[row][col - 1], bricksArray);
+        }
+        if (this.matchUniqueBrick(type, row, col + 1, bricksArray)) {
+            bricksArray.push(this.bricks[row][col + 1]);
+            this.checkSurroundingBricks(this.bricks[row][col + 1], bricksArray);
+        }
+        if (this.matchUniqueBrick(type, row - 1, col, bricksArray)) {
+            bricksArray.push(this.bricks[row - 1][col]);
+            this.checkSurroundingBricks(this.bricks[row - 1][col], bricksArray);
+        }
+        if (this.matchUniqueBrick(type, row + 1, col, bricksArray)) {
+            bricksArray.push(this.bricks[row + 1][col]);
+            this.checkSurroundingBricks(this.bricks[row + 1][col], bricksArray);
+        }
+        return bricksArray;
     }
 
     matchUniqueBrick(type, row, col, bricksArray) {
         if (this.bricks[row]?.[col]?.type === type) {
+            if (!bricksArray) return true;
             if (!bricksArray.find((e) => e.id === this.bricks[row][col].id)) {
                 return true;
             }

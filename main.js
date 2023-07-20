@@ -5,8 +5,9 @@ const gameCanvas = document.getElementById('game');
 const config = {
     type: Phaser.AUTO,
     width: 800,
-    height: 600,
+    height: 800,
     parent: gameCanvas,
+    backgroundColor: '1A1C2C',
     physics: {
         default: 'arcade',
         arcade: {
