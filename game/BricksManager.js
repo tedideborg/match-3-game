@@ -1,3 +1,4 @@
+import { events } from '../utils/events.js';
 import { Brick } from './Brick.js';
 
 const colors = [
@@ -9,16 +10,16 @@ const colors = [
 ];
 
 export class BricksManager {
-    constructor(scene, x, y, row, col) {
+    constructor(scene) {
         this.scene = scene;
         this.bricks = [];
-        this.createStage(x, y, row, col);
+        this.createStage();
     }
 
     createStage() {
         const gridWidth = 4;
         const gridHeight = 4;
-        const startX = 230; // TODO: Calculate center of screen
+        const startX = 150; // TODO: Calculate center of screen
         const startY = 150; // TODO: Calculate center of screen
         const gap = 120;
 
@@ -28,7 +29,7 @@ export class BricksManager {
         for (let i = 0; i < gridWidth; i++) {
             let bricksRow = [];
             for (let j = 0; j < gridHeight; j++) {
-                let brick = colors[Math.floor(Math.random() * colors.length)];
+                let brick = this.getNextTypeToPlace(i, j);
                 bricksRow.push(
                     this.placeBrick(
                         i,
@@ -50,9 +51,13 @@ export class BricksManager {
 
     getNextTypeToPlace(row, col) {
         let brick = colors[Math.floor(Math.random() * colors.length)];
-        this.matchUniqueBrick(row + 1, col);
+        while (this.matchSurroundingBricks(brick.type, row, col)) {
+            brick = colors[Math.floor(Math.random() * colors.length)];
+        }
+        return brick;
     }
 
+    // Use destructuring here instead?
     placeBrick(row, col, x, y, type, color, shadow) {
         let id = Math.random() * 1000;
         const brick = new Brick(
@@ -134,6 +139,7 @@ export class BricksManager {
         bricksToRemove.forEach((brick) => {
             brick.kill();
         });
+        events.emit('addScore', bricksToRemove.length * 10);
     }
 
     checkHorizontalLines(type, startRow, startCol) {
@@ -197,6 +203,22 @@ export class BricksManager {
             this.checkSurroundingBricks(this.bricks[row + 1][col], bricksArray);
         }
         return bricksArray;
+    }
+
+    matchSurroundingBricks(type, row, col) {
+        if (this.bricks[row]?.[col - 1]?.type === type) {
+            return true;
+        }
+        if (this.bricks[row]?.[col + 1]?.type === type) {
+            return true;
+        }
+        if (this.bricks[row - 1]?.[col]?.type === type) {
+            return true;
+        }
+        if (this.bricks[row + 1]?.[col]?.type === type) {
+            return true;
+        }
+        return false;
     }
 
     matchUniqueBrick(type, row, col, bricksArray) {

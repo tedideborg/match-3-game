@@ -1,0 +1,79 @@
+@import 'reset.css';
+@import 'gameUi.css';
+@import 'mainMenu.css';
+
+:root {
+    --btn-main: #7079a5;
+}
+
+@font-face {
+    font-family: 'Fredroka';
+    src: url('../assets/fredoka.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+h1 {
+    color: #f4f2f1;
+}
+
+#main {
+    position: relative;
+    font-family: 'Fredroka';
+}
+
+#game {
+    position: absolute;
+}
+
+#ui {
+    position: absolute;
+    width: 800px;
+    height: 600px;
+    padding: 20px;
+    pointer-events: none;
+}
+
+.button {
+    border-radius: 15px;
+    background-color: var(--btn-main);
+    /* height: 1.75em; */
+    padding: 20px 100px;
+    box-shadow: 0px 20px 30px 5px rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+    color: #f4f2f1;
+    font-size: 4rem;
+    width: 100%;
+
+    &:hover {
+        background-color: #71b5d3;
+        transform: translateY(-5px);
+    }
+
+    &:active {
+        background-color: #216b8b;
+    }
+
+    &.blue {
+        background-color: #4ba3c9;
+    }
+}
+
+.flex-col {
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 50rem;
+}
+
+.center-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}

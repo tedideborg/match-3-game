@@ -1,4 +1,6 @@
-import { SceneOne } from './SceneOne.js';
+import { MainMenu } from './game/MainMenu.js';
+import { SceneOne } from './game/SceneOne.js';
+import startUi from './ui/main.js';
 
 const gameCanvas = document.getElementById('game');
 
@@ -14,7 +16,9 @@ const config = {
             gravity: { y: 200 },
         },
     },
-    scene: SceneOne,
+    scene: [MainMenu, SceneOne],
 };
 
 const game = new Phaser.Game(config);
+
+startUi();

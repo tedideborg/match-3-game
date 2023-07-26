@@ -5,15 +5,21 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Game 1</title>
-        <link rel="stylesheet" href="reset.css" />
-        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="ui/global.css" />
+        <script type="importmap">
+            {
+                "imports": {
+                    "solidjs": "https://cdn.skypack.dev/solid-js",
+                    "solidjs-html": "https://cdn.skypack.dev/solid-js/html",
+                    "solidjs-web": "https://cdn.skypack.dev/solid-js/web"
+                }
+            }
+        </script>
     </head>
     <body>
         <div id="main">
             <div id="game"></div>
-            <div id="ui">
-                <button id="startGame" class="button">Start Game</button>
-            </div>
+            <div id="ui"></div>
         </div>
         <script src="//cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
         <script type="module" src="main.js"></script>
