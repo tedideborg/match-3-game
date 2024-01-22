@@ -8,7 +8,9 @@ export default function settings() {
             <h1>Settings</h1>
             <div class="buttons-container">
                 <div><h2>Music</h2></div>
-                ${button('', 'Back', () => events.emit('changeUi', 'mainMenu'))}
+                ${button('', '', 'Back', () =>
+                    events.emit('changeUi', 'mainMenu'),
+                )}
             </div>
         </div>
     `;

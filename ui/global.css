@@ -29,7 +29,7 @@ h1 {
 #ui {
     position: absolute;
     width: 800px;
-    height: 600px;
+    height: 800px;
     padding: 20px;
     pointer-events: none;
 }
@@ -44,6 +44,10 @@ h1 {
     color: #f4f2f1;
     font-size: 4rem;
     width: 100%;
+
+    &.large {
+        font-size: 4rem;
+    }
 
     &:hover {
         background-color: #71b5d3;

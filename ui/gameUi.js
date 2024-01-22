@@ -12,7 +12,13 @@ export default function gameUi() {
 
     return html`
         <div id="gameUi">
-            <h1>Score: ${() => score()}</h1>
+            <div class="top-bar">
+				<h1>Score: ${() => score()}</h1>
+			</div>
+            <div class="bottom-bar">
+				${button('blue', 'Pause')}
+			</div>
+		</div>
         </div>
     `;
 }

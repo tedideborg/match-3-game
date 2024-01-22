@@ -27,11 +27,11 @@ export class BricksManager {
         let posY = startY;
 
         for (let i = 0; i < gridWidth; i++) {
-            let bricksRow = [];
+            this.bricks[i] = [];
             for (let j = 0; j < gridHeight; j++) {
                 let brick = this.getNextTypeToPlace(i, j);
-                bricksRow.push(
-                    this.placeBrick(
+                this.bricks[i].push(
+                    this.placeNewBrick(
                         i,
                         j,
                         posX,
@@ -45,20 +45,21 @@ export class BricksManager {
             }
             posY += gap;
             posX = startX;
-            this.bricks.push(bricksRow);
         }
     }
 
     getNextTypeToPlace(row, col) {
         let brick = colors[Math.floor(Math.random() * colors.length)];
+        let usedColors = [...colors];
         while (this.matchSurroundingBricks(brick.type, row, col)) {
-            brick = colors[Math.floor(Math.random() * colors.length)];
+            usedColors = usedColors.filter((col) => col.type !== brick.type);
+            brick = usedColors[Math.floor(Math.random() * usedColors.length)];
         }
         return brick;
     }
 
     // Use destructuring here instead?
-    placeBrick(row, col, x, y, type, color, shadow) {
+    placeNewBrick(row, col, x, y, type, color, shadow) {
         let id = Math.random() * 1000;
         const brick = new Brick(
             this.scene,
@@ -73,6 +74,10 @@ export class BricksManager {
             shadow,
         );
         return brick;
+    }
+
+    placeBrick(brick, row, col) {
+
     }
 
     getBrick(col, row) {
@@ -126,19 +131,22 @@ export class BricksManager {
 
     // TODO: Rename this function or split up, to make sense
     checkAround(brick) {
-        let row = brick.row;
-        let col = brick.col;
-        let type = brick.type;
+        const ROW = brick.row;
+        const COL = brick.col;
+        const TYPE = brick.type;
         if (
-            !this.checkHorizontalLines(type, row, col) &&
-            !this.checkVerticalLines(type, row, col)
+            !this.checkHorizontalLines(TYPE, ROW, COL) &&
+            !this.checkVerticalLines(TYPE, ROW, COL)
         ) {
             return;
         }
         const bricksToRemove = this.checkSurroundingBricks(brick, []);
         bricksToRemove.forEach((brick) => {
-            brick.kill();
+            brick.kill()
+            this.bricks[brick.row][brick.col] = undefined
         });
+        this.dropDownAboveBricks(bricksToRemove)
+        this.spawnNewBricks()
         events.emit('addScore', bricksToRemove.length * 10);
     }
 
@@ -182,25 +190,25 @@ export class BricksManager {
 
     // TODO: Redo as a recursion function
     checkSurroundingBricks(brick, bricksArray) {
-        const row = brick.row;
-        const col = brick.col;
-        const type = brick.type;
+        const ROW = brick.row;
+        const COL = brick.col;
+        const TYPE = brick.type;
 
-        if (this.matchUniqueBrick(type, row, col - 1, bricksArray)) {
-            bricksArray.push(this.bricks[row][col - 1]);
-            this.checkSurroundingBricks(this.bricks[row][col - 1], bricksArray);
+        if (this.matchUniqueBrick(TYPE, ROW, COL - 1, bricksArray)) {
+            bricksArray.push(this.bricks[ROW][COL - 1]);
+            this.checkSurroundingBricks(this.bricks[ROW][COL - 1], bricksArray);
         }
-        if (this.matchUniqueBrick(type, row, col + 1, bricksArray)) {
-            bricksArray.push(this.bricks[row][col + 1]);
-            this.checkSurroundingBricks(this.bricks[row][col + 1], bricksArray);
+        if (this.matchUniqueBrick(TYPE, ROW, COL + 1, bricksArray)) {
+            bricksArray.push(this.bricks[ROW][COL + 1]);
+            this.checkSurroundingBricks(this.bricks[ROW][COL + 1], bricksArray);
         }
-        if (this.matchUniqueBrick(type, row - 1, col, bricksArray)) {
-            bricksArray.push(this.bricks[row - 1][col]);
-            this.checkSurroundingBricks(this.bricks[row - 1][col], bricksArray);
+        if (this.matchUniqueBrick(TYPE, ROW - 1, COL, bricksArray)) {
+            bricksArray.push(this.bricks[ROW - 1][COL]);
+            this.checkSurroundingBricks(this.bricks[ROW - 1][COL], bricksArray);
         }
-        if (this.matchUniqueBrick(type, row + 1, col, bricksArray)) {
-            bricksArray.push(this.bricks[row + 1][col]);
-            this.checkSurroundingBricks(this.bricks[row + 1][col], bricksArray);
+        if (this.matchUniqueBrick(TYPE, ROW + 1, COL, bricksArray)) {
+            bricksArray.push(this.bricks[ROW + 1][COL]);
+            this.checkSurroundingBricks(this.bricks[ROW + 1][COL], bricksArray);
         }
         return bricksArray;
     }
@@ -229,5 +237,41 @@ export class BricksManager {
             }
         }
         return false;
+    }
+
+    dropDownAboveBrick(col, row, y, nextRow) {
+        if (this.bricks[row] === undefined) {
+            return
+        } else if (this.bricks[row][col] === undefined) {
+            this.dropDownAboveBrick(col, row + 1, y, nextRow)
+        }
+        const brick = this.bricks[row][col]
+        const currentY = brick.y
+        brick.row = nextRow
+        this.bricks[nextRow][col] = brick
+        this.bricks[row][col] = undefined
+        brick.y = y
+        if (this.bricks[row - 1] !== undefined) {
+            this.dropDownAboveBrick(col, row - 1, currentY, row + 1)
+        }
+    }
+
+    // TODO: Spawn new bricks at the undefined places in the array
+    spawnNewBricks() {
+        this.bricks.forEach(row => {
+            row.forEach(col => {
+                if (col === undefined) {
+                    const brick = this.getNextTypeToPlace(row, col)
+                }
+            })
+        })
+    }
+
+    dropDownAboveBricks(winBricks) {
+        winBricks.forEach((brick) => {
+            let row = brick.row;
+            let col = brick.col;
+            this.dropDownAboveBrick(col, row - 1, brick.y)
+        });
     }
 }
