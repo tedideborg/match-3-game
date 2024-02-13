@@ -9,6 +9,14 @@ const colors = [
     { type: 'purple', color: '0x6665DD', shadow: '0x29366F' }, // TODO: Fix better shadow color
 ];
 
+const STAGE = {
+    gridWidth: 4,
+    gridHeight: 4,
+    startX: 150, // TODO: Calculate center of screen
+    startY: 150, // TODO: Calculate center of screen
+    gap: 120,
+}
+
 export class BricksManager {
     constructor(scene) {
         this.scene = scene;
@@ -17,18 +25,12 @@ export class BricksManager {
     }
 
     createStage() {
-        const gridWidth = 4;
-        const gridHeight = 4;
-        const startX = 150; // TODO: Calculate center of screen
-        const startY = 150; // TODO: Calculate center of screen
-        const gap = 120;
+        let posX = STAGE.startX;
+        let posY = STAGE.startY;
 
-        let posX = startX;
-        let posY = startY;
-
-        for (let i = 0; i < gridWidth; i++) {
+        for (let i = 0; i < STAGE.gridWidth; i++) {
             this.bricks[i] = [];
-            for (let j = 0; j < gridHeight; j++) {
+            for (let j = 0; j < STAGE.gridHeight; j++) {
                 let brick = this.getNextTypeToPlace(i, j);
                 this.bricks[i].push(
                     this.placeNewBrick(
@@ -41,10 +43,10 @@ export class BricksManager {
                         brick.shadow,
                     ),
                 );
-                posX += gap;
+                posX += STAGE.gap;
             }
-            posY += gap;
-            posX = startX;
+            posY += STAGE.gap;
+            posX = STAGE.startX;
         }
     }
 
@@ -145,7 +147,7 @@ export class BricksManager {
             brick.kill()
             this.bricks[brick.row][brick.col] = undefined
         });
-        this.dropDownAboveBricks(bricksToRemove)
+        this.dropDownAboveBricks()
         this.spawnNewBricks()
         events.emit('addScore', bricksToRemove.length * 10);
     }
@@ -239,21 +241,39 @@ export class BricksManager {
         return false;
     }
 
-    dropDownAboveBrick(col, row, y, nextRow) {
-        if (this.bricks[row] === undefined) {
+
+    // What does this function have to handle?
+    // 1: Check that the current brick is undefined (previous method, that is calling this function)
+    // 2: Check that the row above exists, that we are not at the top of the board
+    //  If that's the case, we stop the function
+    // 3: Check above brick if it exists, 
+    //  If it exists we move that brick down and continue upwards moving bricks down
+    dropDownAboveBrick(colIndex, rowIndex, brick) {
+        // Check if the current brick is undefined, if not return
+        if (brick !== undefined) {
             return
-        } else if (this.bricks[row][col] === undefined) {
-            this.dropDownAboveBrick(col, row + 1, y, nextRow)
         }
-        const brick = this.bricks[row][col]
-        const currentY = brick.y
-        brick.row = nextRow
-        this.bricks[nextRow][col] = brick
-        this.bricks[row][col] = undefined
-        brick.y = y
-        if (this.bricks[row - 1] !== undefined) {
-            this.dropDownAboveBrick(col, row - 1, currentY, row + 1)
+        const aboveBrick = this.findClosestBrickAbove(colIndex, rowIndex - 1)
+        if (aboveBrick === undefined) {
+            return
         }
+
+        this.bricks[aboveBrick.row][aboveBrick.col] = undefined
+        this.bricks[rowIndex][colIndex] = aboveBrick
+        aboveBrick.row = rowIndex
+        aboveBrick.y = STAGE.gap * (rowIndex) + STAGE.startY
+    }
+
+    findClosestBrickAbove(colIndex, rowIndex) {
+        // Check if we are at the top of the board, if so return undefined
+        if (this.bricks[rowIndex] === undefined ) {
+            return undefined
+        }
+        // Next we check if the current column has a brick, if not we run this function again
+        if (this.bricks[rowIndex][colIndex] === undefined) {
+            return this.findClosestBrickAbove(colIndex, rowIndex - 1)
+        }
+        return this.bricks[rowIndex][colIndex]
     }
 
     // TODO: Spawn new bricks at the undefined places in the array
@@ -267,11 +287,25 @@ export class BricksManager {
         })
     }
 
-    dropDownAboveBricks(winBricks) {
-        winBricks.forEach((brick) => {
-            let row = brick.row;
-            let col = brick.col;
-            this.dropDownAboveBrick(col, row - 1, brick.y)
-        });
+    dropDownAboveBricks() {
+        // Goes from bottom to top right to left
+        for (let row = this.bricks.length - 1; row >= 0; row--) {
+            for (let col = this.bricks[row].length - 1; col >= 0; col--) {
+                const brick = this.bricks[row][col]
+                console.log(col, row)
+                console.log(brick)
+                console.log("----")
+                this.dropDownAboveBrick(col, row, brick)
+            }
+        }
+        // this.bricks.forEach((row, rowIndex) => {
+        //     row.forEach((col, colIndex) => {
+        //         if (col === undefined && rowIndex === 0) {
+        //             return
+        //         } else if (col === undefined) {
+        //             this.dropDownAboveBrick(colIndex, rowIndex)
+        //         }
+        //     })
+        // })
     }
 }
