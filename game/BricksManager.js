@@ -1,5 +1,6 @@
 import { events } from '../utils/events.js';
 import { Brick } from './Brick.js';
+import { checkPositions } from '../utils/debug.js';
 
 const colors = [
     { type: 'orange', color: '0xFECC7B', shadow: '0xB13E53' },
@@ -31,6 +32,7 @@ export class BricksManager {
         for (let i = 0; i < STAGE.gridWidth; i++) {
             this.bricks[i] = [];
             for (let j = 0; j < STAGE.gridHeight; j++) {
+                // TODO: Seems to not work in this case, probably because they are undefined
                 let brick = this.getNextTypeToPlace(i, j);
                 this.bricks[i].push(
                     this.placeNewBrick(
@@ -86,6 +88,7 @@ export class BricksManager {
         return this.bricks[row][col];
     }
 
+    // TODO: Something is wrong with swapping the bricks after you have had a winning row
     swapBricks(goOne, goTwo) {
         let brick1 = this.bricks[goOne.row][goOne.col];
         let brick2 = this.bricks[goTwo.row][goTwo.col];
@@ -143,6 +146,8 @@ export class BricksManager {
             return;
         }
         const bricksToRemove = this.checkSurroundingBricks(brick, []);
+        // TODO: Highlight the bricks in a bright color, as if they are made of glass.
+        // Maybe highlight the ground below then as well? As a nice outline around all the matching bricks
         bricksToRemove.forEach((brick) => {
             brick.kill()
             this.bricks[brick.row][brick.col] = undefined
@@ -155,13 +160,13 @@ export class BricksManager {
     checkHorizontalLines(type, startRow, startCol) {
         let bricks = [];
         for (let i = startCol; i < this.bricks[startRow].length; i++) {
-            const element = this.bricks[startRow][i];
-            if (element.type === type) bricks.push(element);
+            const brick = this.bricks[startRow][i];
+            if (brick && brick.type === type) bricks.push(brick);
             else break;
         }
         for (let i = startCol; i >= 0; i--) {
-            const element = this.bricks[startRow][i];
-            if (element.type === type) bricks.push(element);
+            const brick = this.bricks[startRow][i];
+            if (brick && brick.type === type) bricks.push(brick);
             else break;
         }
         if (bricks.length > 3) {
@@ -174,13 +179,13 @@ export class BricksManager {
     checkVerticalLines(type, startRow, startCol) {
         let bricks = [];
         for (let i = startRow; i < this.bricks[startRow].length; i++) {
-            const element = this.bricks[i][startCol];
-            if (element.type === type) bricks.push(element);
+            const brick = this.bricks[i][startCol];
+            if (brick && brick.type === type) bricks.push(brick);
             else break;
         }
         for (let i = startRow; i >= 0; i--) {
-            const element = this.bricks[i][startCol];
-            if (element.type === type) bricks.push(element);
+            const brick = this.bricks[i][startCol];
+            if (brick && brick.type === type) bricks.push(brick);
             else break;
         }
         if (bricks.length > 3) {
@@ -190,7 +195,6 @@ export class BricksManager {
         }
     }
 
-    // TODO: Redo as a recursion function
     checkSurroundingBricks(brick, bricksArray) {
         const ROW = brick.row;
         const COL = brick.col;
@@ -241,18 +245,12 @@ export class BricksManager {
         return false;
     }
 
-
-    // What does this function have to handle?
-    // 1: Check that the current brick is undefined (previous method, that is calling this function)
-    // 2: Check that the row above exists, that we are not at the top of the board
-    //  If that's the case, we stop the function
-    // 3: Check above brick if it exists, 
-    //  If it exists we move that brick down and continue upwards moving bricks down
     dropDownAboveBrick(colIndex, rowIndex, brick) {
         // Check if the current brick is undefined, if not return
         if (brick !== undefined) {
             return
         }
+        // We get the brick above, if it's undefined it means there is none and we just exit the function
         const aboveBrick = this.findClosestBrickAbove(colIndex, rowIndex - 1)
         if (aboveBrick === undefined) {
             return
@@ -261,51 +259,53 @@ export class BricksManager {
         this.bricks[aboveBrick.row][aboveBrick.col] = undefined
         this.bricks[rowIndex][colIndex] = aboveBrick
         aboveBrick.row = rowIndex
-        aboveBrick.y = STAGE.gap * (rowIndex) + STAGE.startY
+        aboveBrick.y = STAGE.gap * rowIndex + STAGE.startY
+        aboveBrick.startY = STAGE.gap * rowIndex + STAGE.startY
     }
 
     findClosestBrickAbove(colIndex, rowIndex) {
         // Check if we are at the top of the board, if so return undefined
-        if (this.bricks[rowIndex] === undefined ) {
+        if (this.bricks[rowIndex] === undefined) {
             return undefined
         }
-        // Next we check if the current column has a brick, if not we run this function again
+        // Next we check if the current column has a brick, if not we run this function again and return the results
         if (this.bricks[rowIndex][colIndex] === undefined) {
             return this.findClosestBrickAbove(colIndex, rowIndex - 1)
         }
+        // If it's not undefined we return the brick at that position
         return this.bricks[rowIndex][colIndex]
     }
 
-    // TODO: Spawn new bricks at the undefined places in the array
+    // TODO: Make it look like they drop down from above the screen
     spawnNewBricks() {
-        this.bricks.forEach(row => {
-            row.forEach(col => {
+        this.bricks = this.bricks.map((row, rowIndex) => {
+            return row.map((col, colIndex) => {
                 if (col === undefined) {
                     const brick = this.getNextTypeToPlace(row, col)
+                    const posX = STAGE.gap * colIndex + STAGE.startX
+                    const posY = STAGE.gap * rowIndex + STAGE.startY
+                    return this.placeNewBrick(
+                        rowIndex,
+                        colIndex,
+                        posX,
+                        posY,
+                        brick.type,
+                        brick.color,
+                        brick.shadow,
+                    )
+                } else {
+                    return col
                 }
             })
         })
     }
 
     dropDownAboveBricks() {
-        // Goes from bottom to top right to left
         for (let row = this.bricks.length - 1; row >= 0; row--) {
             for (let col = this.bricks[row].length - 1; col >= 0; col--) {
                 const brick = this.bricks[row][col]
-                console.log(col, row)
-                console.log(brick)
-                console.log("----")
                 this.dropDownAboveBrick(col, row, brick)
             }
         }
-        // this.bricks.forEach((row, rowIndex) => {
-        //     row.forEach((col, colIndex) => {
-        //         if (col === undefined && rowIndex === 0) {
-        //             return
-        //         } else if (col === undefined) {
-        //             this.dropDownAboveBrick(colIndex, rowIndex)
-        //         }
-        //     })
-        // })
     }
 }

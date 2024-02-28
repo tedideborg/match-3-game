@@ -68,11 +68,14 @@ export class Brick extends Phaser.GameObjects.Container {
 
         this.on('dragend', () => {
             let gameObject = this.checkNearestBrick(dragDirection);
+            if (gameObject !== undefined) {
             this.swap(gameObject);
+            }
             dragDirection = null;
         });
     }
 
+    // TODO: Make a nice animation of them exploding or something similar (colorful and bright)
     kill() {
         this.destroy();
     }
@@ -89,9 +92,14 @@ export class Brick extends Phaser.GameObjects.Container {
         } else if (dir.includes('vertical')) {
             vertical = dir.includes('up') ? -1 : 1;
         }
+        horizontal += this.col
+        vertical += this.row
+        if (vertical < 0 || vertical > 3 || horizontal < 0 || horizontal > 3) {
+            return undefined
+        }
         return this.manager.getBrick(
-            this.col + horizontal,
-            this.row + vertical,
+            horizontal,
+            vertical,
         );
     }
 }
