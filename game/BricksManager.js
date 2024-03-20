@@ -85,7 +85,7 @@ export class BricksManager {
     }
 
     // TODO: Something is wrong with swapping the bricks after you have had a winning row
-    swapBricks(goOne, goTwo) {
+    async swapBricks(goOne, goTwo) {
         let brick1 = this.bricks[goOne.row][goOne.col];
         let brick2 = this.bricks[goTwo.row][goTwo.col];
 
@@ -95,39 +95,41 @@ export class BricksManager {
         [brick1.row, brick2.row] = [brick2.row, brick1.row];
         [brick1.col, brick2.col] = [brick2.col, brick1.col];
 
-        // TODO: Removed too fast when matching. Make it wait for tween to finish
-        this.scene.tweens.add({
-            targets: brick2,
-            x: brick1.startX,
-            y: brick1.startY,
-            duration: 100,
-            ease: 'Cubic.inOut',
-            onCompleteParams: { x: brick1.startX, y: brick1.startY },
-            onComplete: (tween, target, data) => {
-                brick2.x = data.x;
-                brick2.y = data.y;
-                brick2.startX = brick2.x;
-                brick2.startY = brick2.y;
-            },
-        });
+        await new Promise(resolve => {
+            this.scene.tweens.add({
+                targets: brick2,
+                x: brick1.startX,
+                y: brick1.startY,
+                duration: 100,
+                ease: 'Cubic.inOut',
+                onCompleteParams: { x: brick1.startX, y: brick1.startY },
+                onComplete: (tween, target, data) => {
+                    brick2.x = data.x;
+                    brick2.y = data.y;
+                    brick2.startX = brick2.x;
+                    brick2.startY = brick2.y;
+                },
+            });
 
-        this.scene.tweens.add({
-            targets: brick1,
-            x: brick2.startX,
-            y: brick2.startY,
-            duration: 100,
-            ease: 'Cubic.inOut',
-            onCompleteParams: { x: brick2.startX, y: brick2.startY },
-            completeDelay: 100,
-            onComplete: (tween, target, data) => {
-                brick1.x = data.x;
-                brick1.y = data.y;
-                brick1.startX = brick1.x;
-                brick1.startY = brick1.y;
-                this.checkAround(brick2);
-                this.checkAround(brick1);
-            },
-        });
+            this.scene.tweens.add({
+                targets: brick1,
+                x: brick2.startX,
+                y: brick2.startY,
+                duration: 100,
+                ease: 'Cubic.inOut',
+                onCompleteParams: { x: brick2.startX, y: brick2.startY },
+                completeDelay: 100,
+                onComplete: (tween, target, data) => {
+                    brick1.x = data.x;
+                    brick1.y = data.y;
+                    brick1.startX = brick1.x;
+                    brick1.startY = brick1.y;
+                    resolve()
+                },
+            });
+        })
+        this.checkAround(brick2);
+        this.checkAround(brick1);
     }
 
     // TODO: Rename this function or split up, to make sense
@@ -141,15 +143,11 @@ export class BricksManager {
         ) {
             return;
         }
-        const bricksToRemove = this.checkSurroundingBricks(brick, []);
-        // TODO: Make this promise it's own function, as DropDownAboveBricks 
-        await Promise.all(bricksToRemove.map(async brick => {
-            await brick.kill()
-            this.bricks[brick.row][brick.col] = undefined
-        }))
+        await this.removeMatchingBricks(brick)
         await this.dropDownAboveBricks()
-        this.spawnNewBricks()
-        events.emit('addScore', bricksToRemove.length * 10);
+        await this.spawnNewBricks()
+        console.table(this.bricks)
+        // events.emit('addScore', bricksToRemove.length * 10);
     }
 
     checkHorizontalLinesForMatchingBricks(type, startRow, startCol) {
@@ -279,26 +277,52 @@ export class BricksManager {
         return this.bricks[rowIndex][colIndex]
     }
 
-    // TODO: Make it look like they drop down from above the screen
-    spawnNewBricks() {
-        this.bricks = this.bricks.map((row, rowIndex) => {
-            return row.map((col, colIndex) => {
-                if (col === undefined) {
-                    const brick = this.getNextTypeToPlace(row, col)
-                    const posX = STAGE.gap * colIndex + STAGE.startX
-                    const posY = STAGE.gap * rowIndex + STAGE.startY
-                    return this.placeNewBrick(
-                        rowIndex,
-                        colIndex,
+    async removeMatchingBricks(brick) {
+        const bricksToRemove = this.checkSurroundingBricks(brick, []);
+        return Promise.all(bricksToRemove.map(async brick => {
+            await brick.kill()
+            this.bricks[brick.row][brick.col] = undefined
+        }))
+    }
+
+    async spawnNewBricks() {
+        const newBricks = []
+        for (let row = 0; row < this.bricks.length; row++) {
+            for (let col = 0; col < this.bricks[row].length; col++) {
+                const brick = this.bricks[row][col]
+                if (brick === undefined) {
+                    const newBrick = this.getNextTypeToPlace(row, col)
+                    const posX = STAGE.gap * col + STAGE.startX
+                    const posY = STAGE.gap * row + STAGE.startY
+                    newBricks.push(this.placeNewBrick(
+                        row,
+                        col,
                         posX,
                         posY,
-                        brick
-                    )
-                } else {
-                    return col
+                        newBrick
+                    ))
                 }
+            }
+        }
+        return Promise.all(newBricks.map(async brick => {
+            const finalY = brick.y
+            brick.y = -400
+            brick.startY = -400
+            return new Promise(resolve => {
+                return this.scene.tweens.add({
+                    targets: brick,
+                    y: finalY,
+                    duration: 400,
+                    ease: 'Cubic.inOut',
+                    onComplete: () => {
+                        brick.y = finalY
+                        brick.startY = finalY
+                        this.bricks[brick.row][brick.col] = brick
+                        resolve()
+                    }
+                }).play()
             })
-        })
+        }))
     }
 
     dropDownAboveBricks() {
