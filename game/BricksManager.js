@@ -2,12 +2,13 @@ import { events } from '../utils/events.js';
 import { Brick } from './Brick.js';
 import { checkPositions } from '../utils/debug.js';
 
+// Fix better glow colors
 const colors = [
-    { type: 'orange', color: '0xFECC7B', shadow: '0xB13E53' },
-    { type: 'green', color: '0xA7F070', shadow: '0x257179' },
-    { type: 'blue', color: '0x73EFF7', shadow: '0x3B5DC9' },
-    { type: 'red', color: '0xF05D5E', shadow: '0x29366F' }, // TODO: Fix better shadow color
-    { type: 'purple', color: '0x6665DD', shadow: '0x29366F' }, // TODO: Fix better shadow color
+    { type: 'orange', color: '0xFECC7B', shadow: '0xB13E53', glow: '0xFECC7B' },
+    { type: 'green', color: '0xA7F070', shadow: '0x257179', glow: '0xA7F070' },
+    { type: 'blue', color: '0x73EFF7', shadow: '0x3B5DC9', glow: '0x73EFF7' },
+    { type: 'red', color: '0xF05D5E', shadow: '0x29366F', glow: '0xFECC7B' }, // TODO: Fix better shadow color
+    { type: 'purple', color: '0x6665DD', shadow: '0x29366F', glow: '0xFECC7B' }, // TODO: Fix better shadow color
 ];
 
 const STAGE = {
@@ -40,9 +41,7 @@ export class BricksManager {
                         j,
                         posX,
                         posY,
-                        brick.type,
-                        brick.color,
-                        brick.shadow,
+                        brick
                     ),
                 );
                 posX += STAGE.gap;
@@ -63,9 +62,9 @@ export class BricksManager {
     }
 
     // Use destructuring here instead?
-    placeNewBrick(row, col, x, y, type, color, shadow) {
+    placeNewBrick(row, col, x, y, brick) {
         let id = Math.random() * 1000;
-        const brick = new Brick(
+        return new Brick(
             this.scene,
             id,
             this,
@@ -73,11 +72,8 @@ export class BricksManager {
             col,
             x,
             y,
-            type,
-            color,
-            shadow,
+            brick
         );
-        return brick;
     }
 
     placeBrick(brick, row, col) {
@@ -135,29 +131,28 @@ export class BricksManager {
     }
 
     // TODO: Rename this function or split up, to make sense
-    checkAround(brick) {
+    async checkAround(brick) {
         const ROW = brick.row;
         const COL = brick.col;
         const TYPE = brick.type;
         if (
-            !this.checkHorizontalLines(TYPE, ROW, COL) &&
-            !this.checkVerticalLines(TYPE, ROW, COL)
+            !this.checkHorizontalLinesForMatchingBricks(TYPE, ROW, COL) &&
+            !this.checkVerticalLinesForMatchingBricks(TYPE, ROW, COL)
         ) {
             return;
         }
         const bricksToRemove = this.checkSurroundingBricks(brick, []);
-        // TODO: Highlight the bricks in a bright color, as if they are made of glass.
-        // Maybe highlight the ground below then as well? As a nice outline around all the matching bricks
-        bricksToRemove.forEach((brick) => {
-            brick.kill()
+        // TODO: Make this promise it's own function, as DropDownAboveBricks 
+        await Promise.all(bricksToRemove.map(async brick => {
+            await brick.kill()
             this.bricks[brick.row][brick.col] = undefined
-        });
-        this.dropDownAboveBricks()
+        }))
+        await this.dropDownAboveBricks()
         this.spawnNewBricks()
         events.emit('addScore', bricksToRemove.length * 10);
     }
 
-    checkHorizontalLines(type, startRow, startCol) {
+    checkHorizontalLinesForMatchingBricks(type, startRow, startCol) {
         let bricks = [];
         for (let i = startCol; i < this.bricks[startRow].length; i++) {
             const brick = this.bricks[startRow][i];
@@ -176,7 +171,7 @@ export class BricksManager {
         }
     }
 
-    checkVerticalLines(type, startRow, startCol) {
+    checkVerticalLinesForMatchingBricks(type, startRow, startCol) {
         let bricks = [];
         for (let i = startRow; i < this.bricks[startRow].length; i++) {
             const brick = this.bricks[i][startCol];
@@ -246,21 +241,29 @@ export class BricksManager {
     }
 
     dropDownAboveBrick(colIndex, rowIndex, brick) {
-        // Check if the current brick is undefined, if not return
-        if (brick !== undefined) {
-            return
+        let lowestEmptyRow = 0
+        for (let i = 0; i < 4; i++) {
+            if (this.bricks[i][colIndex] === undefined) {
+                lowestEmptyRow = i
+            }
         }
-        // We get the brick above, if it's undefined it means there is none and we just exit the function
-        const aboveBrick = this.findClosestBrickAbove(colIndex, rowIndex - 1)
-        if (aboveBrick === undefined) {
-            return
-        }
-
-        this.bricks[aboveBrick.row][aboveBrick.col] = undefined
-        this.bricks[rowIndex][colIndex] = aboveBrick
-        aboveBrick.row = rowIndex
-        aboveBrick.y = STAGE.gap * rowIndex + STAGE.startY
-        aboveBrick.startY = STAGE.gap * rowIndex + STAGE.startY
+        const finalY = STAGE.gap * (lowestEmptyRow - rowIndex + rowIndex) + STAGE.startY
+        this.bricks[brick.row][brick.col] = undefined
+        this.bricks[lowestEmptyRow][colIndex] = brick
+        brick.row = lowestEmptyRow
+        return new Promise(resolve => {
+            return this.scene.tweens.add({
+                targets: brick,
+                y: finalY,
+                duration: 400,
+                ease: 'Cubic.inOut',
+                onComplete: () => {
+                    brick.y = finalY
+                    brick.startY = finalY
+                    resolve()
+                }
+            }).play()
+        })
     }
 
     findClosestBrickAbove(colIndex, rowIndex) {
@@ -289,9 +292,7 @@ export class BricksManager {
                         colIndex,
                         posX,
                         posY,
-                        brick.type,
-                        brick.color,
-                        brick.shadow,
+                        brick
                     )
                 } else {
                     return col
@@ -301,11 +302,21 @@ export class BricksManager {
     }
 
     dropDownAboveBricks() {
+        const columnsToDrop = []
+        const bricksToDrop = []
         for (let row = this.bricks.length - 1; row >= 0; row--) {
-            for (let col = this.bricks[row].length - 1; col >= 0; col--) {
+            for (let col = 0; col < this.bricks[row].length; col++) {
                 const brick = this.bricks[row][col]
-                this.dropDownAboveBrick(col, row, brick)
+                if (brick === undefined) {
+                    columnsToDrop.push(col)
+                }
+                if (columnsToDrop.includes(col) && brick !== undefined) {
+                    bricksToDrop.push(brick)
+                }
             }
         }
+        return Promise.all(bricksToDrop.map(async brick => {
+            return this.dropDownAboveBrick(brick.col, brick.row, brick)
+        }))
     }
 }

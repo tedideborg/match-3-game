@@ -6,7 +6,9 @@ export class MainMenu extends Phaser.Scene {
         super('mainMenu');
     }
 
-    preload() {}
+    preload() {
+        this.load.atlas("flares", "assets/flares.png", "assets/flares.json")
+    }
 
     create() {
         events.on('changeScene', (event) => {
