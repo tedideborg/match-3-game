@@ -6,10 +6,11 @@ const gameCanvas = document.getElementById('game');
 
 const config = {
     type: Phaser.AUTO,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
     width: 800,
     height: 800,
     parent: gameCanvas,
-    backgroundColor: '1A1C2C',
+    transparent: true,
     physics: {
         default: 'arcade',
         arcade: {

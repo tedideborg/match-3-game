@@ -80,7 +80,6 @@ export class Brick extends Phaser.GameObjects.Container {
         });
     }
 
-    // TODO: Make a nice animation of them exploding or something similar (colorful and bright)
     async kill() {
         const glow = this.postFX.addGlow(this.glow, 0, 0, false, 0.1, 24);
         return new Promise(resolve => {
@@ -108,7 +107,6 @@ export class Brick extends Phaser.GameObjects.Container {
                 {
                     at: 550,
                     run: () => this.playParticles()
-                    // Run particles or something similar here
                 },
                 {
                     at: 600,
@@ -119,19 +117,6 @@ export class Brick extends Phaser.GameObjects.Container {
                 }
             ]).play()
         })
-        // return new Promise(resolve => {
-        //     return this.scene.tweens.add({
-        //         targets: glow,
-        //         outerStrength: 1,
-        //         duration: 400,
-        //         ease: 'Cubic.inOut',
-        //         completeDelay: 400,
-        //         onComplete: () => {
-        //             this.destroy()
-        //             resolve()
-        //         },
-        //     });
-        // })
     }
 
     playParticles() {
