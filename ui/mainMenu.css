@@ -1,4 +1,11 @@
 #mainMenu {
     flex-direction: column;
-    gap: 2rem;
+
+    & h1 {
+        font-family: "Gameria";
+        font-size: 10rem;
+        text-align: center;
+        color: #968dff;
+        transform: rotate(5deg);
+    }
 }

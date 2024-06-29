@@ -1,12 +1,15 @@
 #gameUi {
-    display: flex;
+    display: grid;
     justify-content: center;
-    flex-direction: column;
+    align-content: space-between;
     height: 100%;
 }
 
 .bottom-bar {
     margin-top: auto;
+}
+
+.middle {
 }
 
 .top-bar,

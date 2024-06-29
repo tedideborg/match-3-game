@@ -11,7 +11,7 @@ export default function mainMenu() {
 
     return html`
         <div id="mainMenu" class="center-container">
-            <h1>Game logo</h1>
+            <h1>Matchy</h1>
             <${TestComp} margin=${20} center=${true}>
                 <h2>hej</h2>
             <//>
