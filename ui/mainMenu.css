@@ -1,11 +1,25 @@
 #mainMenu {
     flex-direction: column;
 
+    & .game-title {
+        position: relative;
+        margin-bottom: 4rem;
+    }
+
     & h1 {
+        position: absolute;
+        top: 50%;
+        left: 50%;
         font-family: "Gameria";
         font-size: 10rem;
         text-align: center;
-        color: #968dff;
-        transform: rotate(5deg);
+        color: #f37a52;
+        transform: rotate(5deg) translate(-50%, -50%);
+        transform-origin: 0 0;
+    }
+
+    & .title-second {
+        transform: rotate(357deg) translate(-50%, -50%);
+        color: #e7e6ac;
     }
 }

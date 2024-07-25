@@ -14,5 +14,11 @@ export class SceneOne extends Phaser.Scene {
         events.on('startGame', (event) => {
             console.log(event);
         });
+
+        events.on('changeUi', (event) => {
+            if (event === "mainMenu") {
+                this.scene.stop()
+            }
+        });
     }
 }
