@@ -40,6 +40,7 @@ export class Brick extends Phaser.GameObjects.Container {
             dragDirection = null;
         });
 
+        // Fix drag, make it better so that it dosent stick to the first minimal direction you drag it
         this.on('drag', (pointer, dragX, dragY) => {
             scene.children.bringToTop(this);
 
@@ -47,15 +48,15 @@ export class Brick extends Phaser.GameObjects.Container {
                 if (
                     Math.abs(pointer.velocity.x) > Math.abs(pointer.velocity.y)
                 ) {
-                    if (pointer.velocity.x > 0) {
+                    if (pointer.velocity.x > 100) {
                         dragDirection = 'right-horizontal';
-                    } else {
+                    } else if (pointer.velocity.x < 100) {
                         dragDirection = 'left-horizontal';
                     }
                 } else {
-                    if (pointer.velocity.y > 0) {
+                    if (pointer.velocity.y > 100) {
                         dragDirection = 'down-vertical';
-                    } else {
+                    } else if (pointer.velocity.y < 100) {
                         dragDirection = 'up-vertical';
                     }
                 }
