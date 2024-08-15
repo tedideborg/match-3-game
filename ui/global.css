@@ -1,6 +1,7 @@
 @import 'reset.css';
 @import 'gameUi.css';
 @import 'mainMenu.css';
+@import 'buttons.css';
 
 :root {
     --btn-opacity: 30%;
