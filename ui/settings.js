@@ -6,10 +6,13 @@ import toggleButton from './toggleButton.js';
 export default function settings() {
     return html`
         <div class="center-container flex-col">
-            <h1>Settings</h1>
+            <h2 class="sub-heading">Settings</h2>
             <div class="buttons-container">
-                ${toggleButton((e) => {
+                ${toggleButton("Music", (e) => {
                     events.emit('toggleMusic')
+                })}
+                ${toggleButton("Sound Effects", (e) => {
+                    events.emit('toggleSfx')
                 })}
                 ${button('', '', 'Back', () =>
                     events.emit('changeUi', 'mainMenu')

@@ -52,6 +52,12 @@ h1 {
     pointer-events: none;
 }
 
+.sub-heading {
+    font-size: 3.2rem;
+    color: white;
+    margin-bottom: 2rem;
+}
+
 /* .bokeh { */
 /*     position: absolute; */
 /*     left: 40px; */
@@ -63,54 +69,9 @@ h1 {
 /* background: radial-gradient(circle, rgba(255,229,229,1) 0%, rgba(255,231,253,0) 100%);  */
 /* } */
 
-.button {
-    border-radius: 15px;
-    background-color: rgb(var(--btn-main) / var(--btn-opacity));
-    /* height: 1.75em; */
-    padding: 20px 100px;
-    box-shadow: 0px 20px 30px 5px rgba(0, 0, 0, 0.1);
-    pointer-events: auto;
-    color: #f4f2f1;
-    font-size: 4rem;
-    width: 100%;
-
-    &.large {
-        font-size: 4rem;
-    }
-
-    &.small {
-        font-size: 2rem;
-        padding: 10px 60px;
-    }
-
-    &:hover {
-        background-color: rgb(var(--btn-main) / var(--btn-opacity-hover));
-        transform: translateY(-5px);
-    }
-
-    &:active {
-        background-color: #216b8b;
-    }
-
-    &.blue {
-        background-color: rgb(var(--btn-secondary) / var(--btn-opacity));
-    }
-    
-    &.blue:hover {
-        background-color: rgb(var(--btn-secondary) / var(--btn-opacity-hover))
-    }
-}
-
 .flex-col {
     flex-direction: column;
     gap: 2rem;
-}
-
-.buttons-container {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    max-width: 50rem;
 }
 
 .center-container {
@@ -133,3 +94,28 @@ h1 {
         display: flex;
     }
 }
+
+.checkbox {
+    display: grid;
+    place-content: center;
+    font: inherit;
+    color: currentColor;
+    width: 2.15em;
+    height: 2.15em;
+    border: 0.15em solid currentColor;
+    border-radius: 0.15em;
+    transform: translateY(-0.075em);
+}
+
+.checkbox::before {
+    content: "";
+    width: 1.65em;
+    height: 1.65em;
+    transform: scale(0);
+    box-shadow: inset 2em 2em rgb(var(--btn-main));
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+.checkbox:checked::before {
+    transform: scale(1);
+}        

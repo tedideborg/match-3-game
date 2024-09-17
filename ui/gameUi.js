@@ -27,7 +27,6 @@ export default function gameUi() {
             <div class="bottom-bar">
 				${button('blue', 'small', 'Pause', togglePopup)}
 			</div>
-		</div>
         </div>
     `;
 }

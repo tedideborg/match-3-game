@@ -48,15 +48,15 @@ export class Brick extends Phaser.GameObjects.Container {
                 if (
                     Math.abs(pointer.velocity.x) > Math.abs(pointer.velocity.y)
                 ) {
-                    if (pointer.velocity.x > 100) {
+                    if (pointer.velocity.x > 10) {
                         dragDirection = 'right-horizontal';
-                    } else if (pointer.velocity.x < 100) {
+                    } else if (pointer.velocity.x < 10) {
                         dragDirection = 'left-horizontal';
                     }
                 } else {
-                    if (pointer.velocity.y > 100) {
+                    if (pointer.velocity.y > 10) {
                         dragDirection = 'down-vertical';
-                    } else if (pointer.velocity.y < 100) {
+                    } else if (pointer.velocity.y < 10) {
                         dragDirection = 'up-vertical';
                     }
                 }

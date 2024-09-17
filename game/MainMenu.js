@@ -19,7 +19,7 @@ export class MainMenu extends Phaser.Scene {
             this.scene.start('sceneOne');
         });
 
-        events.on('toggleMusic', (event) => {
+        events.on('toggleMusic', () => {
             if (this.music.isPlaying) {
                 this.music.stop()
             } else {
@@ -27,7 +27,7 @@ export class MainMenu extends Phaser.Scene {
             }
         })
 
-        events.on('toggleSfx', (event) => {
+        events.on('toggleSfx', () => {
         })
     }
 }
