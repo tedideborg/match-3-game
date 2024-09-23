@@ -34,7 +34,7 @@ export class Brick extends Phaser.GameObjects.Container {
             dropZone: true,
         });
 
-        scene.input.dragDistanceThreshold = 8;
+        scene.input.dragDistanceThreshold = 32;
 
         this.on('dragstart', () => {
             dragDirection = null;
@@ -83,6 +83,16 @@ export class Brick extends Phaser.GameObjects.Container {
 
     async kill() {
         const glow = this.postFX.addGlow(this.glow, 0, 0, false, 0.1, 24);
+        const emitter = this.scene.add.particles(this.x + 50, this.y + 50, "flares", {
+            frame: "red",
+            speed: { min: 50, max: 100 },
+            blendMode: 'ADD',
+            lifespan: 1800,
+            gravityY: 200,
+            alpha: { start: 0.8, end: 0 },
+            scale: { start: 1, end: 0.5 },
+            emitting: false
+        })
         return new Promise(resolve => {
             return this.scene.add.timeline([
                 {
@@ -107,7 +117,7 @@ export class Brick extends Phaser.GameObjects.Container {
                 },
                 {
                     at: 550,
-                    run: () => this.playParticles()
+                    run: () => emitter.explode(6)
                 },
                 {
                     at: 600,
@@ -118,19 +128,6 @@ export class Brick extends Phaser.GameObjects.Container {
                 }
             ]).play()
         })
-    }
-
-    playParticles() {
-        const emitter = this.scene.add.particles(this.x + 50, this.y + 50, "flares", {
-            frame: "red",
-            speed: { min: 150, max: 200 },
-            blendMode: 'ADD',
-            lifespan: 800,
-            gravityY: 200,
-            alpha: { start: 0.8, end: 0 },
-            scale: { start: 1, end: 0.5 }
-        })
-        emitter.explode(6)
     }
 
     swap(gameObject) {

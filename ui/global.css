@@ -18,8 +18,8 @@
 }
 
 @font-face {
-    font-family: 'Gameria';
-    src: url('../assets/GAMERIA.ttf') format('truetype');
+    font-family: 'Suissnord';
+    src: url('../assets/Suissnord.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
@@ -82,17 +82,22 @@ h1 {
 }
 
 .popup {
-    display: none;
-    align-items: center;
-    flex-direction: column;
     padding: 40px 20px;
     border-radius: 20px;
+    z-index: 1000;
     background: rgb(2,0,36);
     background: linear-gradient(180deg, rgba(2,0,36,1) 100%, rgba(26,28,44,1) 62%, rgba(114,4,145,1) 0%); 2C;
+}
 
-    &.show {
-        display: flex;
-    }
+.popup-background {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    height: 100vh;
+    left: 0;
+    width: 100vw;
+    z-index: 0;
+    background-color: rgba(0,0,0,0.6)
 }
 
 .checkbox {

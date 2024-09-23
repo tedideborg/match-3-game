@@ -1,8 +1,10 @@
 import { MainMenu } from './game/MainMenu.js';
 import { SceneOne } from './game/SceneOne.js';
 import startUi from './ui/main.js';
+import Music from './music/music.js'
 
 const gameCanvas = document.getElementById('game');
+const music = new Music()
 
 const config = {
     type: Phaser.AUTO,
@@ -23,3 +25,4 @@ const config = {
 const game = new Phaser.Game(config);
 
 startUi();
+music.startMusic();

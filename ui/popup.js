@@ -1,16 +1,17 @@
+import { createSignal } from 'solidjs';
 import html from 'solidjs-html';
 import button from "./button.js"
 import {events} from "../utils/events.js"
 
-export default function popup(show) {
+export default function popup(show, setShowPopup) {
+    // Add a settings button here to mute music and audio
     return html`
-        <div class="popup ${show === true ? 'show' : ''}">
+        <dialog open=${show} class="popup">
             <h2>Paused</h2>
             <div class="buttons-container">
-				${button('blue', 'small', 'Main Menu', () => events.emit("changeUi", "mainMenu"))}
-				${button('blue', 'small', 'Mute Audio', () => events.emit("muteAudio"))}
-				${button('blue', 'small', 'Quit', () => events.emit("quitGame"))}
+                ${button('blue', 'small', 'Main Menu', () => events.emit("changeUi", "mainMenu"))}
+                ${button('blue', 'small', 'Back', () => setShowPopup(false))}
             </div>
-        </div>
+        </dialog>
     `;
 }

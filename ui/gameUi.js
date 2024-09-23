@@ -22,7 +22,7 @@ export default function gameUi() {
 				<h1>Score: ${() => score()}</h1>
 			</div>
             <div class="middle center-container">
-                ${() => popup(showPopup())}
+                ${() => popup(showPopup(), togglePopup)}
             </div>
             <div class="bottom-bar">
 				${button('blue', 'small', 'Pause', togglePopup)}

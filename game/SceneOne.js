@@ -12,7 +12,6 @@ export class SceneOne extends Phaser.Scene {
         this.stage = new BricksManager(this);
 
         events.on('startGame', (event) => {
-            console.log(event);
         });
 
         events.on('changeUi', (event) => {
