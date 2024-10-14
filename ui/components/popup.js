@@ -1,7 +1,7 @@
 import { createSignal } from 'solidjs';
 import html from 'solidjs-html';
 import button from "./button.js"
-import {events} from "../utils/events.js"
+import {events} from "../../utils/events.js"
 
 export default function popup(show, setShowPopup) {
     // Add a settings button here to mute music and audio

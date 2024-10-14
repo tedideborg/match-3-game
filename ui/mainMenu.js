@@ -1,6 +1,6 @@
 import html from 'solidjs-html';
 import { events } from '../utils/events.js';
-import button from './button.js';
+import button from './components/button.js';
 
 export default function mainMenu() {
     const changeScene = () => {

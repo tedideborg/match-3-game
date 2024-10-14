@@ -1,8 +1,8 @@
 import { createSignal } from 'solidjs';
 import html from 'solidjs-html';
 import { events } from '../utils/events.js';
-import button from './button.js';
-import popup from "./popup.js";
+import button from './components/button.js';
+import popup from "./components/popup.js";
 
 export default function gameUi() {
     const [score, setScore] = createSignal(0);
