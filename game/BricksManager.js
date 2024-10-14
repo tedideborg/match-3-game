@@ -24,6 +24,7 @@ export class BricksManager {
         this.scene = scene;
         this.bricks = [];
         this.createStage();
+        this.amountOfBricksRemoved = 0
     }
 
     createStage() {
@@ -86,6 +87,8 @@ export class BricksManager {
 
     // TODO: Something is wrong with swapping the bricks after you have had a winning row
     async swapBricks(goOne, goTwo) {
+        this.amountOfBricksRemoved = 0
+
         let brick1 = this.bricks[goOne.row][goOne.col];
         let brick2 = this.bricks[goTwo.row][goTwo.col];
 
@@ -128,12 +131,12 @@ export class BricksManager {
                 },
             });
         })
-        this.checkAround(brick2);
-        this.checkAround(brick1);
+        this.checkAndRemoveBricks(brick2);
+        this.checkAndRemoveBricks(brick1);
     }
 
     // TODO: Rename this function or split up, to make sense
-    async checkAround(brick) {
+    async checkAndRemoveBricks(brick) {
         const ROW = brick.row;
         const COL = brick.col;
         const TYPE = brick.type;
@@ -144,9 +147,9 @@ export class BricksManager {
             return;
         }
         await this.removeMatchingBricks(brick)
+        events.emit('addScore', this.amountOfBricksRemoved * 10);
         await this.dropDownAboveBricks()
         await this.spawnNewBricks()
-        // events.emit('addScore', bricksToRemove.length * 10);
     }
 
     checkHorizontalLinesForMatchingBricks(type, startRow, startCol) {
@@ -278,6 +281,7 @@ export class BricksManager {
 
     async removeMatchingBricks(brick) {
         const bricksToRemove = this.checkSurroundingBricks(brick, []);
+        this.amountOfBricksRemoved = bricksToRemove.length + 1
         return Promise.all(bricksToRemove.map(async brick => {
             await brick.kill()
             this.bricks[brick.row][brick.col] = undefined
