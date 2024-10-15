@@ -10,7 +10,11 @@ export default function mainMenu() {
 
     return html`
         <div id="mainMenu" class="center-container">
-            <h1 class="game-title">Matchy</h1>
+            <div class="title">
+                <h1 class="game-title second">Matchy</h1>
+                <div class="title-line"></div>
+                <h1 class="game-title">Matchy</h1>
+            </div>
             <div class="buttons-container">
                 ${button('blue', '', 'New Game', changeScene)}
                 ${button('', '', 'Settings', () =>

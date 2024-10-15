@@ -1,12 +1,30 @@
 #mainMenu {
+    position: relative;
     flex-direction: column;
+
+    .title {
+        margin-bottom: 3rem;
+    }
 
     & .game-title {
         font-family: "Suissnord";
         font-size: 7rem;
         text-align: center;
-        background: -webkit-linear-gradient(#00d4ff, #f50ad6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+        margin: 0;
+        padding: 0;
+        color: cyan;
+        line-height: 5rem;
+        font-style: italic;
+    }
+
+    & .second {
+        color: mediumvioletred;
+        line-height: 5.5rem;
+    }
+
+    .title-line {
+        height: 2px;
+        width: 100%;
+        background-color: white;
     }
 }

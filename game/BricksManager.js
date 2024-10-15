@@ -77,15 +77,10 @@ export class BricksManager {
         );
     }
 
-    placeBrick(brick, row, col) {
-
-    }
-
     getBrick(col, row) {
         return this.bricks[row][col];
     }
 
-    // TODO: Something is wrong with swapping the bricks after you have had a winning row
     async swapBricks(goOne, goTwo) {
         this.amountOfBricksRemoved = 0
 
@@ -133,9 +128,9 @@ export class BricksManager {
         })
         this.checkAndRemoveBricks(brick2);
         this.checkAndRemoveBricks(brick1);
+        // this.checkBoardForNewMatches();
     }
 
-    // TODO: Rename this function or split up, to make sense
     async checkAndRemoveBricks(brick) {
         const ROW = brick.row;
         const COL = brick.col;
@@ -345,5 +340,18 @@ export class BricksManager {
         return Promise.all(bricksToDrop.map(async brick => {
             return this.dropDownAboveBrick(brick.col, brick.row, brick)
         }))
+    }
+
+    checkBoardForNewMatches() {
+        this.bricks.forEach(row => {
+            row.forEach(brick => {
+                const ROW = brick.row;
+                const COL = brick.col;
+                const TYPE = brick.type;
+                if (this.checkVerticalLinesForMatchingBricks(TYPE, ROW, COL) || this.checkHorizontalLinesForMatchingBricks(TYPE, ROW, COL)) {
+                    console.log("hej")
+                }
+            })
+        })
     }
 }
