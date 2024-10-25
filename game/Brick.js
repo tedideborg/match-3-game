@@ -34,7 +34,7 @@ export class Brick extends Phaser.GameObjects.Container {
             dropZone: true,
         });
 
-        scene.input.dragDistanceThreshold = 32;
+        scene.input.dragDistanceThreshold = 64 * scene.scale.displayScale.x;
 
         this.on('dragstart', () => {
             dragDirection = null;
