@@ -13,7 +13,7 @@ ONLY WORKS ON DESKTOP FOR NOW, MOBILE LAYOUT IS MESSED UP ATM!
     -   [ ] Document this template as well, the css classes, util functions, the event system and so forth
 -   [ ] Make the background of the popup clickable to be able to close it that way as well
     -   [ ] Add a settings button to the popup as well
--   [ ] Create nice bokeh effect
--   [ ] Fix layouting in mobile layouts and sizing
+-   [X] Create nice bokeh effect
+-   [X] Fix layouting in mobile layouts and sizing
 -   [ ] Dropping in new symbols dont get cleared if they create a new winning line, fix so that it checks for new winnings when landing
--   [ ] Make the scene start when you start the entire game, now it seems that it doesn't always start correctly when clicking start game. Maybe just hide it when game is started and then show it when the player clicks start game
+-   [X] Make the scene start when you start the entire game, now it seems that it doesn't always start correctly when clicking start game. Maybe just hide it when game is started and then show it when the player clicks start game

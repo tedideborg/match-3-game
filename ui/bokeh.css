@@ -1,0 +1,67 @@
+.bokeh-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.bokeh {
+    position: absolute;
+    border-radius: 50%;
+    opacity: .2;
+}
+
+.bokeh-1 {
+    width: 35%;
+    height: 50%;
+    background: #650d61;
+    animation-name: bokehOne;
+    animation-duration: 80s;
+}
+
+.bokeh-2 {
+    width: 20%;
+    height: 30%;
+    background: #e92e2e;
+    animation-name: bokehTwo;
+    animation-duration: 100s;
+}
+
+.bokeh-3 {
+    width: 40%;
+    height: 60%;
+    background: #abe560;
+    animation: bokehThree 100s alternate infinite;
+}
+
+@keyframes bokehOne {
+    from {
+        left: 10%;
+        top: 10%;
+    }
+    to {
+        top: 40%;
+        left : 60%;
+    }
+}
+
+@keyframes bokehTwo {
+    from {
+        left: 80%;
+        top: 60%;
+    }
+    to {
+        top: 100%;
+        left : 0%;
+    }
+}
+
+@keyframes bokehThree {
+    from {
+        left: 60%;
+        top: 0%;
+    }
+    to {
+        top: 10%;
+        left : 30%;
+    }
+}

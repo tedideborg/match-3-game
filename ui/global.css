@@ -2,6 +2,7 @@
 @import 'gameUi.css';
 @import 'mainMenu.css';
 @import 'components/buttons.css';
+@import 'bokeh.css';
 
 :root {
     --btn-opacity: 30%;
