@@ -14,8 +14,8 @@ const colors = [
 const STAGE = {
     gridWidth: 4,
     gridHeight: 4,
-    startX: 150, // TODO: Calculate center of screen
-    startY: 150, // TODO: Calculate center of screen
+    startX: 165,
+    startY: 165,
     gap: 120,
 }
 

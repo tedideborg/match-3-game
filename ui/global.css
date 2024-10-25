@@ -8,6 +8,9 @@
     --btn-opacity-hover: 70%;
     --btn-main: 209 70 164;
     --btn-secondary: 53 117 255;
+
+    --fs-title: clamp(3.5rem, 10vw + 1rem, 7rem);
+    --fs-button: clamp(2.5rem, 5vw + 1rem, 4rem);
 }
 
 @font-face {
@@ -28,8 +31,11 @@ h1 {
     color: #f4f2f1;
 }
 
+html {
+    height: 100%;
+}
+
 #main {
-    /* background-color: #1A1C */
     background: rgb(2,0,36);
     background: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(26,28,44,1) 62%, rgba(114,4,145,1) 100%); 2C;
     position: relative;

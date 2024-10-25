@@ -8,9 +8,12 @@ const music = new Music()
 
 const config = {
     type: Phaser.AUTO,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 800,
-    height: 800,
+    scale: {
+        // mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 800,
+        height: 800,
+    },
     parent: gameCanvas,
     transparent: true,
     physics: {
