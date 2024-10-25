@@ -9,10 +9,10 @@ const music = new Music()
 const config = {
     type: Phaser.AUTO,
     scale: {
-        // mode: Phaser.Scale.RESIZE,
+        mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 800,
-        height: 800,
+        width: 600,
+        height: 600,
     },
     parent: gameCanvas,
     transparent: true,

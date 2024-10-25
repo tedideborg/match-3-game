@@ -22,5 +22,8 @@ function App() {
 }
 
 export default function startUi() {
-    render(App, document.getElementById('ui'));
+    // TODO: Implement a loading bar or something here while it loads
+    events.on("sceneCreated", () => {
+        render(App, document.getElementById('ui'));
+    })
 }

@@ -14,8 +14,8 @@ const colors = [
 const STAGE = {
     gridWidth: 4,
     gridHeight: 4,
-    startX: 165,
-    startY: 165,
+    startX: 70,
+    startY: 70,
     gap: 120,
 }
 

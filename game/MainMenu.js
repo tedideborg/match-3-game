@@ -29,5 +29,7 @@ export class MainMenu extends Phaser.Scene {
 
         events.on('toggleSfx', () => {
         })
+
+        events.emit("sceneCreated")
     }
 }
