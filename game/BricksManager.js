@@ -126,9 +126,8 @@ export class BricksManager {
                 },
             });
         })
-        this.checkAndRemoveBricks(brick2);
-        this.checkAndRemoveBricks(brick1);
-        // this.checkBoardForNewMatches();
+        await Promise.all([this.checkAndRemoveBricks(brick2), this.checkAndRemoveBricks(brick1)])
+        await this.checkBoardForNewMatches();
     }
 
     async checkAndRemoveBricks(brick) {
@@ -342,16 +341,27 @@ export class BricksManager {
         }))
     }
 
-    checkBoardForNewMatches() {
+    async checkBoardForNewMatches() {
+        const bricksToRemove = []
         this.bricks.forEach(row => {
             row.forEach(brick => {
                 const ROW = brick.row;
                 const COL = brick.col;
                 const TYPE = brick.type;
                 if (this.checkVerticalLinesForMatchingBricks(TYPE, ROW, COL) || this.checkHorizontalLinesForMatchingBricks(TYPE, ROW, COL)) {
-                    console.log("hej")
+                    bricksToRemove.push(brick)
                 }
             })
         })
+        if (bricksToRemove.length === 0) return
+        const test = this.checkSurroundingBricks(bricksToRemove[0], bricksToRemove)
+        this.amountOfBricksRemoved = test.length + 1
+        await Promise.all(test.map(async brick => {
+            this.bricks[brick.row][brick.col] = undefined
+            await brick.kill()
+        }))
+        events.emit('addScore', this.amountOfBricksRemoved * 10);
+        await this.dropDownAboveBricks()
+        await this.spawnNewBricks()
     }
 }

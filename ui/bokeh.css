@@ -11,24 +11,24 @@
 }
 
 .bokeh-1 {
-    width: 35%;
-    height: 50%;
+    width: 500px;
+    height: 500px;
     background: #650d61;
     animation-name: bokehOne;
     animation-duration: 80s;
 }
 
 .bokeh-2 {
-    width: 20%;
-    height: 30%;
+    width: 300px;
+    height: 300px;
     background: #e92e2e;
     animation-name: bokehTwo;
     animation-duration: 100s;
 }
 
 .bokeh-3 {
-    width: 40%;
-    height: 60%;
+    width: 150px;
+    height: 150px;
     background: #abe560;
     animation: bokehThree 100s alternate infinite;
 }
