@@ -363,5 +363,6 @@ export class BricksManager {
         events.emit('addScore', this.amountOfBricksRemoved * 10);
         await this.dropDownAboveBricks()
         await this.spawnNewBricks()
+        // await this.checkBoardForNewMatches()
     }
 }

@@ -90,7 +90,7 @@ export class Brick extends Phaser.GameObjects.Container {
             lifespan: 1800,
             gravityY: 200,
             alpha: { start: 0.8, end: 0 },
-            scale: { start: 1, end: 0.5 },
+            scale: { start: 0.5, end: 0.2 },
             emitting: false
         })
         return new Promise(resolve => {
@@ -117,7 +117,7 @@ export class Brick extends Phaser.GameObjects.Container {
                 },
                 {
                     at: 550,
-                    run: () => emitter.explode(6)
+                    run: () => emitter.explode(9)
                 },
                 {
                     at: 600,
