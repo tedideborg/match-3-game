@@ -19,6 +19,6 @@ ONLY WORKS ON DESKTOP FOR NOW, MOBILE LAYOUT IS MESSED UP ATM!
 -   [ ] Create music and sfx for the game
 -   [ ] Particles look low-res, make them high-res and don't scale them as much
 -   [X] Make the scene start when you start the entire game, now it seems that it doesn't always start correctly when clicking start game. Maybe just hide it when game is started and then show it when the player clicks start game
--   [ ] Make bokeh animations loop back and forth.
+-   [X] Make bokeh animations loop back and forth.
 -   [ ] Scroll bars are showing but shouldn't be.
--   [ ] Game area is taking up too much space, should be smaller
+-   [X] Game area is taking up too much space, should be smaller
