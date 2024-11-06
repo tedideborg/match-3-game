@@ -17,8 +17,8 @@ ONLY WORKS ON DESKTOP FOR NOW, MOBILE LAYOUT IS MESSED UP ATM!
 -   [X] Fix layouting in mobile layouts and sizing
 -   [X] Dropping in new symbols dont get cleared if they create a new winning line, fix so that it checks for new winnings when landing
 -   [ ] Create music and sfx for the game
--   [ ] Particles look low-res, make them high-res and don't scale them as much
+-   [X] Particles look low-res, make them high-res and don't scale them as much
 -   [X] Make the scene start when you start the entire game, now it seems that it doesn't always start correctly when clicking start game. Maybe just hide it when game is started and then show it when the player clicks start game
 -   [X] Make bokeh animations loop back and forth.
--   [ ] Scroll bars are showing but shouldn't be.
+-   [X] Scroll bars are showing but shouldn't be.
 -   [X] Game area is taking up too much space, should be smaller
